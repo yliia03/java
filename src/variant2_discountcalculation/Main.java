@@ -10,7 +10,7 @@ public class Main {
             new VipCustomerDiscount(),
             new WholesaleCustomerDiscount(),
             new EmployeeDiscount(),
-            new StudentDiscount() // Додано без переписування існуючих класів
+            new StudentDiscount() 
         );
 
         DiscountCalculatorService service = new DiscountCalculatorService(strategies);
