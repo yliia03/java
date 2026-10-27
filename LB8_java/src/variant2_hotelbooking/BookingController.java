@@ -13,7 +13,6 @@ public class BookingController {
         Guest guest = new Guest(10, guestName, "+380971112233", "AA123456");
         Room room = new Room(302, "Deluxe", 2000.0);
 
-        // Creator / Information Expert в дії
         Booking booking = new Booking(501, guest, room, 3, season, true, true);
 
         repository.save(booking);
