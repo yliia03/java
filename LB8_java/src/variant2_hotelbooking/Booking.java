@@ -5,7 +5,7 @@ public class Booking {
     private final Guest guest;
     private final Room room;
     private final int nights;
-    private final String season; // "Low", "High", "Peak"
+    private final String season; 
     private final boolean includeBreakfast;
     private final boolean includeParking;
     
@@ -53,7 +53,6 @@ public class Booking {
         this.status = "Confirmed";
     }
 
-    // Гетери для доступу до полів
     public int getBookingId() { return bookingId; }
     public Guest getGuest() { return guest; }
     public Room getRoom() { return room; }
