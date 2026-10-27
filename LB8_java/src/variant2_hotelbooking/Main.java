@@ -17,6 +17,8 @@ public class Main {
 
         Booking booking = controller.processNewBooking(name, season);
 
+
+        
         System.out.println("\n--- Квитанція ---");
         System.out.println("Бронювання #" + booking.getBookingId() + " для " + booking.getGuest().getFullName());
         System.out.println("Проживання: " + booking.getRoomTotal() + " грн");
