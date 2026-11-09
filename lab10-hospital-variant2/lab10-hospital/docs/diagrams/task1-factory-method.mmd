@@ -1,0 +1,106 @@
+classDiagram
+    direction TB
+
+    class Department {
+        <<abstract>>
+        -String name
+        -String chiefDoctor
+        -DischargeArchive archive
+        #Department(name, chiefDoctor, archive)
+        +getName() String
+        #createDocument(Patient) DischargeDocument*
+        +discharge(Patient) Optional~DischargeDocument~
+    }
+    class TherapyDepartment {
+        +TherapyDepartment(DischargeArchive)
+        #createDocument(Patient) DischargeDocument
+    }
+    class SurgeryDepartment {
+        +SurgeryDepartment(DischargeArchive)
+        #createDocument(Patient) DischargeDocument
+    }
+    class CardiologyDepartment {
+        +CardiologyDepartment(DischargeArchive)
+        #createDocument(Patient) DischargeDocument
+    }
+    class PediatricsDepartment {
+        +PediatricsDepartment(DischargeArchive)
+        #createDocument(Patient) DischargeDocument
+    }
+
+    class DischargeDocument {
+        <<interface>>
+        +title() String
+        +patientName() String
+        +sign(String doctor) void
+        +isSigned() boolean
+        +content() String
+    }
+    class AbstractDischargeDocument {
+        <<abstract>>
+        #Patient patient
+        -String signedBy
+        #specificSection() String*
+        +sign(String doctor) void
+        +content() String
+    }
+    class GeneralEpicrisis {
+        +title() String
+        +specificSection() String
+    }
+    class SurgeryEpicrisis {
+        +title() String
+        +specificSection() String
+    }
+    class CardiologyEpicrisis {
+        +title() String
+        +specificSection() String
+    }
+    class PediatricEpicrisis {
+        +title() String
+        +specificSection() String
+    }
+
+    class DischargeArchive {
+        -List~DischargeDocument~ documents
+        +store(DischargeDocument) void
+        +size() int
+    }
+    class Patient {
+        -String name
+        -String diagnosis
+        -boolean treatmentCompleted
+        -Map~String,String~ clinicalData
+        +getName() String
+        +isTreatmentCompleted() boolean
+        +data(String key) String
+    }
+
+    Department <|-- TherapyDepartment
+    Department <|-- SurgeryDepartment
+    Department <|-- CardiologyDepartment
+    Department <|-- PediatricsDepartment
+
+    DischargeDocument <|.. AbstractDischargeDocument
+    AbstractDischargeDocument <|-- GeneralEpicrisis
+    AbstractDischargeDocument <|-- SurgeryEpicrisis
+    AbstractDischargeDocument <|-- CardiologyEpicrisis
+    AbstractDischargeDocument <|-- PediatricEpicrisis
+
+    Department ..> DischargeDocument : creates, 1 per discharge
+    TherapyDepartment ..> GeneralEpicrisis : new
+    SurgeryDepartment ..> SurgeryEpicrisis : new
+    CardiologyDepartment ..> CardiologyEpicrisis : new
+    PediatricsDepartment ..> PediatricEpicrisis : new
+
+    Department "*" --> "1" DischargeArchive : archive
+    DischargeArchive "1" o-- "*" DischargeDocument : documents
+    AbstractDischargeDocument "*" --> "1" Patient : patient
+    Department ..> Patient : uses
+
+    note for Department "Роль: Creator<br/>discharge() - загальна процедура виписки,<br/>createDocument() - фабричний метод"
+    note for TherapyDepartment "Роль: ConcreteCreator"
+    note for PediatricsDepartment "Роль: ConcreteCreator<br/>додано без змін у Department"
+    note for DischargeDocument "Роль: Product"
+    note for GeneralEpicrisis "Роль: ConcreteProduct"
+    note for PediatricEpicrisis "Роль: ConcreteProduct<br/>додано без змін у Department"

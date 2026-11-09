@@ -1,0 +1,82 @@
+classDiagram
+    direction LR
+
+    class ReferralDirector {
+        -ReferralBuilder builder
+        +ReferralDirector(ReferralBuilder)
+        +buildPreoperative(patient, doctor) Referral
+        +buildCheckup(patient, doctor) Referral
+    }
+
+    class ReferralBuilder {
+        <<interface>>
+        +forPatient(String) ReferralBuilder
+        +addAnalysis(String) ReferralBuilder
+        +addProcedure(String) ReferralBuilder
+        +signedBy(String) ReferralBuilder
+        +urgency(Urgency) ReferralBuilder
+        +fasting() ReferralBuilder
+        +withContrast() ReferralBuilder
+        +note(String) ReferralBuilder
+        +build() Referral
+    }
+
+    class StandardReferralBuilder {
+        -String patient
+        -List~Examination~ examinations
+        -Urgency urgency
+        -boolean fasting
+        -boolean contrast
+        -List~String~ notes
+        -String doctor
+        -String SOURCE$
+        +build() Referral
+    }
+
+    class Referral {
+        -String patient
+        -List~Examination~ examinations
+        -Urgency urgency
+        -boolean fasting
+        -boolean contrast
+        -List~String~ notes
+        -String doctorSignature
+        ~Referral(patient, examinations, urgency, fasting, contrast, notes, doctor)
+        +getPatient() String
+        +getExaminations() List~Examination~
+        +toString() String
+    }
+
+    class Examination {
+        <<record>>
+        +ExaminationKind kind
+        +String name
+    }
+    class ExaminationKind {
+        <<enumeration>>
+        ANALYSIS
+        PROCEDURE
+    }
+    class Urgency {
+        <<enumeration>>
+        PLANNED
+        URGENT
+    }
+    class ReferralValidationException {
+        +ReferralValidationException(String)
+    }
+
+    ReferralDirector "1" --> "1" ReferralBuilder : builder
+    ReferralBuilder <|.. StandardReferralBuilder
+    StandardReferralBuilder ..> Referral : creates in build()
+    StandardReferralBuilder ..> ReferralValidationException : throws
+    StandardReferralBuilder "1" *-- "0..*" Examination : collects
+    Referral "1" *-- "1..*" Examination : examinations
+    Examination --> ExaminationKind
+    Referral --> Urgency
+    StandardReferralBuilder --> Urgency
+
+    note for ReferralDirector "Роль: Director<br/>типові направлення описано в одному місці"
+    note for ReferralBuilder "Роль: Builder<br/>кроки формування"
+    note for StandardReferralBuilder "Роль: ConcreteBuilder<br/>build() перевіряє: пацієнт, >=1 дослідження, підпис"
+    note for Referral "Роль: Product<br/>незмінний, конструктор лише для будівельника"

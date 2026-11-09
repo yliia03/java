@@ -1,0 +1,110 @@
+---
+config:
+  layout: elk
+---
+classDiagram
+    direction TB
+
+    class Ward {
+        -String name
+        +Ward(String name)
+        +prepareKit(String patient, MedicalKitFactory) MedicalKit
+    }
+
+    class MedicalKitFactory {
+        <<interface>>
+        +createCuff() BloodPressureCuff
+        +createCatheter() IvCatheter
+        +createSyringe() DosingSyringe
+        +categoryName() String
+    }
+    class AdultKitFactory {
+        +createCuff() BloodPressureCuff
+        +createCatheter() IvCatheter
+        +createSyringe() DosingSyringe
+    }
+    class ChildKitFactory {
+        +createCuff() BloodPressureCuff
+        +createCatheter() IvCatheter
+        +createSyringe() DosingSyringe
+    }
+    class NewbornKitFactory {
+        +createCuff() BloodPressureCuff
+        +createCatheter() IvCatheter
+        +createSyringe() DosingSyringe
+    }
+
+    class MedicalProduct {
+        <<interface>>
+        +category() String
+        +describe() String
+    }
+    class BloodPressureCuff {
+        <<interface>>
+    }
+    class IvCatheter {
+        <<interface>>
+    }
+    class DosingSyringe {
+        <<interface>>
+        +dosageSetting() String
+    }
+
+    class AdultCuff
+    class ChildCuff
+    class NewbornCuff
+    class AdultCatheter
+    class ChildCatheter
+    class NewbornCatheter
+    class AdultSyringe
+    class ChildSyringe
+    class NewbornSyringe
+
+    class MedicalKit {
+        -BloodPressureCuff cuff
+        -IvCatheter catheter
+        -DosingSyringe syringe
+        +MedicalKit(cuff, catheter, syringe)
+        +toString() String
+    }
+
+    MedicalKitFactory <|.. AdultKitFactory
+    MedicalKitFactory <|.. ChildKitFactory
+    MedicalKitFactory <|.. NewbornKitFactory
+
+    MedicalProduct <|-- BloodPressureCuff
+    MedicalProduct <|-- IvCatheter
+    MedicalProduct <|-- DosingSyringe
+
+    BloodPressureCuff <|.. AdultCuff
+    BloodPressureCuff <|.. ChildCuff
+    BloodPressureCuff <|.. NewbornCuff
+    IvCatheter <|.. AdultCatheter
+    IvCatheter <|.. ChildCatheter
+    IvCatheter <|.. NewbornCatheter
+    DosingSyringe <|.. AdultSyringe
+    DosingSyringe <|.. ChildSyringe
+    DosingSyringe <|.. NewbornSyringe
+
+    Ward ..> MedicalKitFactory : uses
+    Ward ..> MedicalKit : creates
+    MedicalKit "1" o-- "1" BloodPressureCuff
+    MedicalKit "1" o-- "1" IvCatheter
+    MedicalKit "1" o-- "1" DosingSyringe
+
+    AdultKitFactory ..> AdultCuff : creates
+    AdultKitFactory ..> AdultCatheter : creates
+    AdultKitFactory ..> AdultSyringe : creates
+    ChildKitFactory ..> ChildCuff : creates
+    ChildKitFactory ..> ChildCatheter : creates
+    ChildKitFactory ..> ChildSyringe : creates
+    NewbornKitFactory ..> NewbornCuff : creates
+    NewbornKitFactory ..> NewbornCatheter : creates
+    NewbornKitFactory ..> NewbornSyringe : creates
+
+    note for Ward "Роль: Client<br/>знає лише абстракції"
+    note for MedicalKitFactory "Роль: AbstractFactory"
+    note for AdultKitFactory "Роль: ConcreteFactory"
+    note for NewbornKitFactory "Роль: ConcreteFactory<br/>категорію додано без змін у Ward"
+    note for BloodPressureCuff "Ролі: AbstractProduct<br/>(Cuff, Catheter, Syringe)"
+    note for AdultCuff "Роль: ConcreteProduct<br/>(усі 9 виробів - по 3 на категорію)"
