@@ -1,0 +1,64 @@
+@startuml
+title Завдання 2. Adapter — підключення лабораторного аналізатора
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty members
+
+class HospitalLabSystem <<Client>> {
+  - cards: Map<String, List<LabResult>>
+  --
+  + receive(analyzer: LabAnalyzer, patientId: String): void
+  + cardOf(patientId: String): List<LabResult>
+}
+
+interface LabAnalyzer <<Target>> {
+  + name(): String
+  + fetchResults(patientId: String): List<LabResult>
+}
+
+class LabResult <<record>> <<Value>> {
+  + indicator(): String
+  + valueMmolPerL(): double
+  + toString(): String
+}
+
+class BioChemDriverAdapter <<Adapter>> {
+  {static} - CODES: Map<String, String>
+  - driver: BioChemDriver
+  --
+  + BioChemDriverAdapter(driver: BioChemDriver)
+  + name(): String
+  + fetchResults(patientId: String): List<LabResult>
+}
+
+class ChemProLinkAdapter <<Adapter>> {
+  {static} - CODES: Map<String, String>
+  - device: ChemProLink
+  --
+  + ChemProLinkAdapter(device: ChemProLink)
+  + name(): String
+  + fetchResults(patientId: String): List<LabResult>
+}
+
+class BioChemDriver <<Adaptee (vendor 1)>> {
+  + requestRawResult(sampleCode: String): String
+}
+
+class ChemProLink <<Adaptee (vendor 2)>> {
+  + dump(patientRef: String): String[]
+}
+
+class Units <<Utility>> {
+  {static} ~ umolToMmol(umol: double): double
+}
+
+HospitalLabSystem ..> LabAnalyzer : uses
+HospitalLabSystem "1" o-- "0..*" LabResult : cards
+BioChemDriverAdapter ..|> LabAnalyzer
+ChemProLinkAdapter ..|> LabAnalyzer
+BioChemDriverAdapter "1" --> "1" BioChemDriver : driver
+ChemProLinkAdapter "1" --> "1" ChemProLink : device
+BioChemDriverAdapter ..> Units
+ChemProLinkAdapter ..> Units
+LabAnalyzer ..> LabResult : returns
+@enduml

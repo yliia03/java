@@ -1,0 +1,80 @@
+@startuml
+title Завдання 3. Facade — госпіталізація пацієнта
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty members
+
+class AdmissionDepartment <<Client>> {
+  - facade: HospitalizationFacade
+  --
+  + admitEmergency(patient: Patient): HospitalizationResult
+}
+
+class PlannedHospitalizationModule <<Client>> {
+  - facade: HospitalizationFacade
+  --
+  + admitPlanned(patient: Patient): HospitalizationResult
+}
+
+class HospitalizationFacade <<Facade>> {
+  - registration: PatientRegistration
+  - beds: BedRegistry
+  - doctors: DoctorAssignment
+  - planner: ExaminationPlanner
+  - kitchen: KitchenNotifier
+  --
+  + hospitalize(patient: Patient): HospitalizationResult
+}
+
+class PatientRegistration <<Subsystem>> {
+  - counter: int
+  --
+  + register(patient: Patient): String
+}
+
+class BedRegistry <<Subsystem>> {
+  - wardByPatientId: Map<String, String>
+  - nextWard: int
+  --
+  + allocate(patientId: String, patient: Patient): String
+  + transfer(patientId: String, newWard: String): void
+  + wardOf(patientId: String): String
+}
+
+class DoctorAssignment <<Subsystem>> {
+  {static} - DOCTORS: Map<String, String>
+  --
+  + assign(patientId: String, patient: Patient): String
+}
+
+class ExaminationPlanner <<Subsystem>> {
+  + plan(patientId: String, patient: Patient): String
+}
+
+class KitchenNotifier <<Subsystem>> {
+  + notifyKitchen(patientId: String, patient: Patient, ward: String): void
+}
+
+class Patient <<record>> <<Value>> {
+  + name(): String
+  + diagnosis(): String
+  + department(): String
+  + diet(): String
+}
+
+class HospitalizationResult <<record>> <<Value>> {
+  + patientId(): String
+  + ward(): String
+  + doctor(): String
+}
+
+AdmissionDepartment "*" --> "1" HospitalizationFacade : facade
+PlannedHospitalizationModule "*" --> "1" HospitalizationFacade : facade
+HospitalizationFacade "1" o-- "1" PatientRegistration
+HospitalizationFacade "1" o-- "1" BedRegistry
+HospitalizationFacade "1" o-- "1" DoctorAssignment
+HospitalizationFacade "1" o-- "1" ExaminationPlanner
+HospitalizationFacade "1" o-- "1" KitchenNotifier
+HospitalizationFacade ..> HospitalizationResult : creates
+HospitalizationFacade ..> Patient
+@enduml

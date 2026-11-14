@@ -1,0 +1,59 @@
+@startuml
+title Завдання 4. Decorator — позначки в картці пацієнта
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty members
+
+interface PatientCard <<Component>> {
+  + render(): String
+  + assignProcedure(procedure: String): void
+}
+
+class BasicPatientCard <<ConcreteComponent>> {
+  - patientName: String
+  - ward: String
+  --
+  + BasicPatientCard(patientName: String, ward: String)
+  + render(): String
+  + assignProcedure(procedure: String): void
+}
+
+abstract class CardMark <<Decorator>> {
+  # inner: PatientCard
+  --
+  # CardMark(inner: PatientCard)
+  + render(): String
+  + assignProcedure(procedure: String): void
+}
+
+class AllergyMark <<ConcreteDecorator>> {
+  - allergen: String
+  --
+  + AllergyMark(inner: PatientCard, allergen: String)
+  + render(): String
+}
+
+class FallRiskMark <<ConcreteDecorator>> {
+  + FallRiskMark(inner: PatientCard)
+  + render(): String
+}
+
+class VipMark <<ConcreteDecorator>> {
+  + VipMark(inner: PatientCard)
+  + render(): String
+}
+
+class InfectionControlMark <<ConcreteDecorator>> {
+  + InfectionControlMark(inner: PatientCard)
+  + render(): String
+  + assignProcedure(procedure: String): void
+}
+
+BasicPatientCard ..|> PatientCard
+CardMark ..|> PatientCard
+CardMark "1" o-- "1" PatientCard : inner
+AllergyMark --|> CardMark
+FallRiskMark --|> CardMark
+VipMark --|> CardMark
+InfectionControlMark --|> CardMark
+@enduml

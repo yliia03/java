@@ -1,0 +1,81 @@
+@startuml
+title Завдання 1. Proxy — перегляд медичних знімків
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty members
+
+class PatientImageCard <<Client>> {
+  - patientName: String
+  - images: List<MedicalImage>
+  --
+  + show(): void
+  + openImage(imageId: String, viewer: Employee): void
+}
+
+interface MedicalImage <<Subject>> {
+  + id(): String
+  + title(): String
+  + open(viewer: Employee): void
+}
+
+class ImageProxy <<Proxy>> {
+  {static} - DENIED_MESSAGE: String
+  - id: String
+  - title: String
+  - sizeMb: int
+  - storage: ImageStorage
+  - real: RemoteMedicalImage
+  --
+  + ImageProxy(id, title, sizeMb, storage)
+  + id(): String
+  + title(): String
+  + open(viewer: Employee): void
+}
+
+class RemoteMedicalImage <<RealSubject>> {
+  - id: String
+  - title: String
+  - loadedMb: int
+  --
+  + RemoteMedicalImage(id, title, sizeMb, storage)
+  + id(): String
+  + title(): String
+  + open(viewer: Employee): void
+}
+
+class ImageStorage <<Remote storage>> {
+  - downloadCount: int
+  --
+  + download(imageId: String, sizeMb: int): int
+  + getDownloadCount(): int
+}
+
+class Employee <<record>> <<Value>> {
+  + name(): String
+  + role(): Role
+}
+
+enum Role {
+  DOCTOR
+  REGISTRAR
+  NURSE
+  --
+  + label(): String
+}
+
+class AccessDeniedException <<Exception>> {
+  + AccessDeniedException(message: String)
+}
+
+PatientImageCard "1" o-- "0..*" MedicalImage : images
+ImageProxy ..|> MedicalImage
+RemoteMedicalImage ..|> MedicalImage
+ImageProxy "1" *-- "0..1" RemoteMedicalImage : real (lazy)
+ImageProxy "*" --> "1" ImageStorage : storage
+RemoteMedicalImage ..> ImageStorage : download()
+MedicalImage ..> Employee : viewer
+Employee "*" --> "1" Role : role
+ImageProxy ..> Role : checks
+ImageProxy ..> AccessDeniedException : throws
+PatientImageCard ..> AccessDeniedException : catches
+@enduml
