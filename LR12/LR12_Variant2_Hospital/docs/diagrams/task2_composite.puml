@@ -1,0 +1,35 @@
+@startuml
+title Завдання 2 — Шаблон Composite (Структура лікарні і ліжковий фонд)
+
+interface HospitalUnit <<Component>> {
+  + getName() : String
+  + getTotalBeds() : int
+  + getFreeBeds() : int
+  + printTree(indent : String) : void
+}
+
+class Bed <<Leaf>> {
+  - bedNumber : String
+  - occupied : boolean
+  + getName() : String
+  + getTotalBeds() : int
+  + getFreeBeds() : int
+  + printTree(indent : String) : void
+}
+
+class HospitalDivision <<Composite>> {
+  - name : String
+  - type : String
+  - children : List<HospitalUnit>
+  + add(unit : HospitalUnit) : void
+  + remove(unit : HospitalUnit) : void
+  + getName() : String
+  + getTotalBeds() : int
+  + getFreeBeds() : int
+  + printTree(indent : String) : void
+}
+
+HospitalUnit <|.. Bed
+HospitalUnit <|.. HospitalDivision
+HospitalDivision o--> "0..*" HospitalUnit : contains >
+@enduml

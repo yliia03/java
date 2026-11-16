@@ -1,0 +1,63 @@
+@startuml
+title Завдання 1 — Шаблон Bridge (Медичні звіти)
+
+abstract class MedicalReport <<Abstraction>> {
+  # format : ReportFormat
+  # MedicalReport(format : ReportFormat)
+  + setFormat(format : ReportFormat) : void
+  + {abstract} generate() : String
+}
+
+class PatientDischargeReport <<RefinedAbstraction>> {
+  - patientName : String
+  - diagnosis : String
+  + generate() : String
+}
+
+class DepartmentMonthlyReport <<RefinedAbstraction>> {
+  - department : String
+  - treatedCount : int
+  + generate() : String
+}
+
+class HealthDepartmentStatReport <<RefinedAbstraction>> {
+  - period : String
+  - indicators : String
+  + generate() : String
+}
+
+interface ReportFormat <<Implementor>> {
+  + getFormatName() : String
+  + export(title : String, content : String) : String
+}
+
+class PrintFormat <<ConcreteImplementor>> {
+  + getFormatName() : String
+  + export(title : String, content : String) : String
+}
+
+class PdfFormat <<ConcreteImplementor>> {
+  + getFormatName() : String
+  + export(title : String, content : String) : String
+}
+
+class ElectronicGovFormat <<ConcreteImplementor>> {
+  + getFormatName() : String
+  + export(title : String, content : String) : String
+}
+
+class CsvFormat <<ConcreteImplementor>> {
+  + getFormatName() : String
+  + export(title : String, content : String) : String
+}
+
+MedicalReport o--> "1" ReportFormat : delegates >
+MedicalReport <|-- PatientDischargeReport
+MedicalReport <|-- DepartmentMonthlyReport
+MedicalReport <|-- HealthDepartmentStatReport
+
+ReportFormat <|.. PrintFormat
+ReportFormat <|.. PdfFormat
+ReportFormat <|.. ElectronicGovFormat
+ReportFormat <|.. CsvFormat
+@enduml

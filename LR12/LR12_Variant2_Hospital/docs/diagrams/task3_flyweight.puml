@@ -1,0 +1,39 @@
+@startuml
+title Завдання 3 — Шаблон Flyweight (Призначення препаратів)
+
+class MedicationType <<Flyweight>> {
+  - name : String
+  - activeSubstance : String
+  - releaseForm : String
+  - instructions : String
+  - contraindications : String
+  - interactions : String
+  + getName() : String
+  + getActiveSubstance() : String
+  + getReleaseForm() : String
+  + getInstructions() : String
+  + getContraindications() : String
+  + getInteractions() : String
+  + getShortInfo() : String
+  + getFullClinicalDetails() : String
+}
+
+class MedicationFactory <<FlyweightFactory>> {
+  - {static} cache : Map<String, MedicationType>
+  + {static} getMedication(...) : MedicationType
+  + {static} getCreatedTypesCount() : int
+}
+
+class Prescription <<Context>> {
+  - patientName : String
+  - dosage : String
+  - intakeSchedule : String
+  - medication : MedicationType
+  + getMedication() : MedicationType
+  + describe() : String
+}
+
+MedicationFactory o--> "0..*" MedicationType : caches >
+Prescription --> "1" MedicationType : shares >
+Prescription ..> MedicationFactory : requests from
+@enduml
