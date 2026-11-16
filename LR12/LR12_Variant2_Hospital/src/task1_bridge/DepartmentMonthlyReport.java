@@ -15,3 +15,4 @@ public class DepartmentMonthlyReport extends MedicalReport {
         return format.export("Звіт відділення за місяць: " + department, "Проліковано пацієнтів: " + treatedCount);
     }
 }
+
