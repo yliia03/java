@@ -1,0 +1,108 @@
+classDiagram
+    direction LR
+    class MedicalOrder {
+        <<interface>>
+        <<Command>>
+        +execute() void
+        +undo() void
+        +description() String
+    }
+    class AddMedicationOrder {
+        <<ConcreteCommand>>
+        -chart PatientChart
+        -drug String
+        -doseMg int
+        -previousDose Integer
+        +execute() void
+        +undo() void
+        +description() String
+    }
+    class ChangeDoseOrder {
+        <<ConcreteCommand>>
+        -chart PatientChart
+        -drug String
+        -newDoseMg int
+        -oldDoseMg Integer
+        +execute() void
+        +undo() void
+        +description() String
+    }
+    class CancelProcedureOrder {
+        <<ConcreteCommand>>
+        -chart PatientChart
+        -procedure String
+        -wasPresent boolean
+        +execute() void
+        +undo() void
+        +description() String
+    }
+    class PatientChart {
+        <<Receiver>>
+        -patientName String
+        -medications Map~String,Integer~
+        -procedures Set~String~
+        +addMedication(drug, doseMg) void
+        +removeMedication(drug) Integer
+        +getDose(drug) Integer
+        +setDose(drug, doseMg) void
+        +addProcedure(procedure) void
+        +removeProcedure(procedure) boolean
+    }
+    class OrderQueue {
+        <<Command storage>>
+        -pending Deque~MedicalOrder~
+        +add(order) void
+        +removeLast() MedicalOrder
+        +pollNext() MedicalOrder
+        +isEmpty() boolean
+        +snapshot() List~MedicalOrder~
+    }
+    class Doctor {
+        <<Client>>
+        -name String
+        -queue OrderQueue
+        -log EventLog
+        +prescribe(order) void
+        +revokeLast() void
+        +printQueue() void
+    }
+    class Nurse {
+        <<Invoker>>
+        -name String
+        -queue OrderQueue
+        -log EventLog
+        -journal List~ExecutionRecord~
+        -executed Deque~MedicalOrder~
+        +executeAll() void
+        +undoLastExecuted() void
+        +printJournal() void
+    }
+    class ExecutionRecord {
+        <<record>>
+        +time String
+        +executor String
+        +description String
+    }
+    class EventLog {
+        <<utility>>
+        -time LocalTime
+        +log(source, event) void
+        +now() LocalTime
+        +nowText() String
+        +advanceMinutes(minutes) void
+    }
+    MedicalOrder <|.. AddMedicationOrder : реалізація
+    MedicalOrder <|.. ChangeDoseOrder : реалізація
+    MedicalOrder <|.. CancelProcedureOrder : реалізація
+    AddMedicationOrder --> "1" PatientChart : chart
+    ChangeDoseOrder --> "1" PatientChart : chart
+    CancelProcedureOrder --> "1" PatientChart : chart
+    OrderQueue o-- "0..*" MedicalOrder : pending
+    Doctor --> "1" OrderQueue : queue
+    Nurse --> "1" OrderQueue : queue
+    Nurse o-- "0..*" MedicalOrder : executed
+    Nurse *-- "0..*" ExecutionRecord : journal
+    Doctor ..> MedicalOrder : створює/відкликає
+    Doctor ..> EventLog
+    Nurse ..> EventLog
+    note for MedicalOrder "Роль у шаблоні: Command"

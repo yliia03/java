@@ -1,0 +1,74 @@
+classDiagram
+    direction TB
+    class InquiryHandler {
+        <<abstract>>
+        <<Handler>>
+        -next InquiryHandler
+        #name String
+        #log EventLog
+        +setNext(next) void
+        +getName() String
+        +handle(inquiry) boolean
+        #canHandle(inquiry) boolean*
+        #process(inquiry) void*
+    }
+    class DutyOperator {
+        <<ConcreteHandler>>
+        #canHandle(inquiry) boolean
+        #process(inquiry) void
+    }
+    class NurseHandler {
+        <<ConcreteHandler>>
+        #canHandle(inquiry) boolean
+        #process(inquiry) void
+    }
+    class DutyDoctor {
+        <<ConcreteHandler>>
+        #canHandle(inquiry) boolean
+        #process(inquiry) void
+    }
+    class EmergencyService {
+        <<ConcreteHandler>>
+        #canHandle(inquiry) boolean
+        #process(inquiry) void
+    }
+    class HotlineService {
+        <<Client>>
+        -log EventLog
+        -head InquiryHandler
+        -modeName String
+        +configure(modeName, handlers) void
+        +submit(inquiry) void
+    }
+    class Inquiry {
+        <<record>>
+        +id int
+        +caller String
+        +type InquiryType
+        +text String
+    }
+    class InquiryType {
+        <<enumeration>>
+        GENERAL
+        TREATMENT
+        URGENT_MEDICAL
+        LIFE_THREAT
+        OTHER
+        +title() String
+    }
+    class EventLog {
+        <<utility>>
+        +log(source, event) void
+    }
+    InquiryHandler <|-- DutyOperator
+    InquiryHandler <|-- NurseHandler
+    InquiryHandler <|-- DutyDoctor
+    InquiryHandler <|-- EmergencyService
+    InquiryHandler --> "0..1" InquiryHandler : next
+    HotlineService --> "0..1" InquiryHandler : head
+    HotlineService ..> Inquiry : submit
+    Inquiry --> "1" InquiryType : type
+    InquiryHandler ..> Inquiry : handle
+    InquiryHandler ..> EventLog
+    HotlineService ..> EventLog
+    note for InquiryHandler "Роль у шаблоні: Handler"
