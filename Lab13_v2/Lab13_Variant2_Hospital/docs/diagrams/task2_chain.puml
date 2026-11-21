@@ -1,0 +1,19 @@
+@startuml
+title Діаграма класів: Завдання 2 — Гаряча лінія лікарні (Chain of Responsibility)
+abstract class InquiryHandler <<Handler>> {
+  - next: InquiryHandler
+  + setNext(next): void
+  + handle(inquiry): boolean
+}
+class DutyOperator <<ConcreteHandler>>
+class NurseHandler <<ConcreteHandler>>
+class DutyDoctor <<ConcreteHandler>>
+class EmergencyService <<ConcreteHandler>>
+class HotlineService <<Client>>
+InquiryHandler <|-- DutyOperator
+InquiryHandler <|-- NurseHandler
+InquiryHandler <|-- DutyDoctor
+InquiryHandler <|-- EmergencyService
+InquiryHandler --> "0..1" InquiryHandler : -next
+HotlineService --> "0..1" InquiryHandler : -head
+@enduml

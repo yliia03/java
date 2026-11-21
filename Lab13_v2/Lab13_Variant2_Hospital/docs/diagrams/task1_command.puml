@@ -1,0 +1,24 @@
+@startuml
+title Діаграма класів: Завдання 1 — Призначення лікаря (Шаблон Command)
+interface MedicalOrder <<Command>> {
+  + execute(): void
+  + undo(): void
+  + description(): String
+}
+class PatientChart <<Receiver>>
+class AddMedicationOrder <<ConcreteCommand>>
+class ChangeDoseOrder <<ConcreteCommand>>
+class CancelProcedureOrder <<ConcreteCommand>>
+class OrderQueue <<Command storage>>
+class Doctor <<Client>>
+class Nurse <<Invoker>>
+MedicalOrder <|.. AddMedicationOrder
+MedicalOrder <|.. ChangeDoseOrder
+MedicalOrder <|.. CancelProcedureOrder
+AddMedicationOrder --> PatientChart
+ChangeDoseOrder --> PatientChart
+CancelProcedureOrder --> PatientChart
+OrderQueue o-- MedicalOrder
+Doctor --> OrderQueue
+Nurse --> OrderQueue
+@enduml
